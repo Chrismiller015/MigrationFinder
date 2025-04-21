@@ -1,0 +1,61 @@
+# ─── Logs ───────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+lerna-debug.log*
+
+# ─── Diagnostic reports ─────────────────────────────
+report.*.json
+
+# ─── Runtime data ───────────────────────────────────
+pids/
+*.pid
+*.pid.lock
+
+# ─── Coverage & build outputs ───────────────────────
+coverage/
+*.lcov
+.nyc_output/
+build/Release/
+dist/
+build/
+out/
+
+# ─── Dependency directories ─────────────────────────
+node_modules/
+
+# ─── Framework caches ───────────────────────────────
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vitepress/dist/
+.vitepress/cache/
+.docusaurus/
+
+# ─── Serverless & related ───────────────────────────
+.serverless/
+.fusebox/
+.dynamodb/
+
+# ─── Optional caches & lock‑dirs ────────────────────
+.npm/
+.yarn/cache/
+.pnp.js
+.pnp.cjs
+# If you do use yarn or pnpm, ignore *their* lockfiles:
+yarn.lock
+pnpm-lock.yaml
+
+# ─── Editor & OS files ─────────────────────────────
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# ─── Electron‑specific artifacts ────────────────────
+token.json           # per‑user OAuth tokens
+latestReport.xlsx    # downloaded report
+*.exe                # Windows installers
+*.dmg                # macOS installers

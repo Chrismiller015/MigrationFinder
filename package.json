@@ -1,0 +1,48 @@
+{
+  "name": "migration-finder",
+  "version": "1.0.0",
+  "description": "Finds the latest Migration Status Report in Gmail",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
+    "exceljs": "^4.3.0",
+    "google-auth-library": "^9.15.1",
+    "googleapis": "^148.0.0"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.0.0",
+    "png-to-icns": "^1.0.0",
+    "png-to-ico": "^2.1.8"
+  },
+  "build": {
+    "appId": "com.dealerInspire.migrationfinder",
+    "productName": "Migration Finder",
+    "files": [
+      "**/*",
+      "!node_modules/electron*",
+      "!token.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "icon": "assets/MigrationReportFinderIcon.ico",
+      "target": "nsis",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Migration Finder",
+      "license": "assets/EULA.txt"
+    }
+  }
+}

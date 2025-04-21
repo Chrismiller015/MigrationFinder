@@ -1,0 +1,28 @@
+Migration Finder End‑User License Agreement (EULA)
+
+Last Updated: [YYYY‑MM‑DD]
+
+1. License Grant  
+You are hereby granted a perpetual, worldwide, non‑exclusive, royalty‑free, fully paid‑up license to use, copy, modify, distribute, sell, and otherwise exploit the Migration Finder application (“the Software”) in source or binary form, in whole or in part, for any purpose. You may incorporate the Software into your own projects, internal tools, or commercial products without restriction.
+
+2. No Warranty  
+THE SOFTWARE IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, OR NON‑INFRINGEMENT.  
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+3. Limitation of Liability  
+IN NO EVENT WILL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE TO YOU FOR ANY INDIRECT, PUNITIVE, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES OF ANY KIND EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+4. Indemnification  
+You agree to indemnify, defend, and hold harmless the authors and copyright holders from and against any and all claims, liabilities, damages, losses, and expenses (including reasonable attorneys’ fees) arising out of or in any way connected with your use of the Software.
+
+5. Termination  
+This license is effective until terminated. You may terminate it at any time by destroying all copies of the Software in your possession. This license will also terminate immediately if you fail to comply with any term of this EULA. Upon termination, you must destroy all copies of the Software.
+
+6. Miscellaneous  
+This EULA constitutes the entire agreement between you and the authors regarding the Software and supersedes all prior or contemporaneous communications, proposals, or agreements, whether oral or written, between you and the authors.
+
+If any provision of this EULA is held to be unenforceable, the remainder of the EULA will remain in full force and effect.
+
+---
+
+Enjoy using Migration Finder—do whatever you want with it!  
