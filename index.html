@@ -1,7 +1,10 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;">
   <title>Migration Finder</title>
 
   <style>
@@ -28,8 +31,6 @@
       flex-direction: column;
       align-items: center;
     }
-
-    /* Search card */
     .card {
       background: var(--bg-card);
       border-radius: var(--card-radius);
@@ -37,137 +38,69 @@
       width: 360px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.7);
     }
-    .card h2 {
-      margin: 0 0 1rem;
-      font-size: 1.5rem;
-      text-align: center;       /* centered title */
-    }
-    .card label {
-      display: block;
-      margin-top: 1rem;
-      font-size: 0.9rem;
-    }
+    .card h2 { margin: 0 0 1rem; font-size: 1.5rem; text-align: center; }
+    .card label { display: block; margin-top: 1rem; font-size: 0.9rem; }
     .card input {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 4px;
-      color: var(--input-text);
-      font-size: 1rem;
+      width: 100%; padding: 0.5rem; margin-top: 0.25rem;
+      background: var(--input-bg); border: 1px solid var(--input-border);
+      border-radius: 4px; color: var(--input-text); font-size: 1rem;
     }
     .card button {
-      width: 100%;
-      padding: 0.75rem;
-      margin-top: 1.5rem;
-      background: var(--button-bg);
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
+      width: 100%; padding: 0.75rem; margin-top: 1.5rem;
+      background: var(--button-bg); border: none; border-radius: 8px;
+      color: #fff; font-size: 1rem; cursor: pointer;
       transition: background 0.2s;
     }
-    .card button:hover {
-      background: var(--button-hover);
-    }
+    .card button:hover { background: var(--button-hover); }
 
-    /* Results card */
     .results-card {
-      display: none;
-      background: var(--bg-card);
-      border-radius: var(--card-radius);
-      padding: 1rem;
-      margin: 1.5rem auto;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.7);
-      overflow-x: auto;
-      width: 80vw;              /* responsive width */
-      max-width: 100%;
+      display: none; background: var(--bg-card); border-radius: var(--card-radius);
+      padding: 1rem; margin: 1.5rem auto; box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+      overflow-x: auto; width: 80vw; max-width: 100%;
     }
-    .results-card h2 {
-      margin: 0 0 1rem;
-      font-size: 1.25rem;
-      text-align: center;       /* centered title */
-    }
-
-    /* Table auto‑size to widest content */
+    .results-card h2 { margin: 0 0 1rem; font-size: 1.25rem; text-align: center; }
     table {
-      border-collapse: collapse;
-      table-layout: auto;
-      width: max-content;
-      white-space: nowrap;
+      border-collapse: collapse; table-layout: auto; width: max-content; white-space: nowrap;
     }
     th, td {
-      padding: 0.5rem;
-      border-bottom: 1px solid var(--input-border);
-      font-size: 0.9rem;
-      white-space: nowrap;
-      text-align: left;
+      padding: 0.5rem; border-bottom: 1px solid var(--input-border);
+      font-size: 0.9rem; white-space: nowrap; text-align: left;
     }
-    th {
-      border-bottom: 2px solid var(--input-border);
+    th { border-bottom: 2px solid var(--input-border); }
+    /* Scrollbars */
+    .results-card::-webkit-scrollbar { height: 8px; width: 8px; }
+    .results-card::-webkit-scrollbar-track { background: transparent; }
+    .results-card::-webkit-scrollbar-thumb {
+      background-color: #444; border-radius: 4px;
     }
-    /* Custom scrollbars for the results card */
-.results-card::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
-}
-.results-card::-webkit-scrollbar-track {
-  background: transparent;
-}
-.results-card::-webkit-scrollbar-thumb {
-  background-color: #444;  /* thumb color */
-  border-radius: 4px;
-}
-.results-card::-webkit-scrollbar-thumb:hover {
-  background-color: #666;
-}
-
-/* (Optional) also style the body scrollbars if you like */
-body::-webkit-scrollbar {
-  width: 8px;
-}
-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-body::-webkit-scrollbar-thumb {
-  background-color: #444;
-  border-radius: 4px;
-}
-body::-webkit-scrollbar-thumb:hover {
-  background-color: #666;
-}
-
+    .results-card::-webkit-scrollbar-thumb:hover { background-color: #666; }
+    body::-webkit-scrollbar { width: 8px; }
+    body::-webkit-scrollbar-track { background: transparent; }
+    body::-webkit-scrollbar-thumb { background-color: #444; border-radius: 4px; }
+    body::-webkit-scrollbar-thumb:hover { background-color: #666; }
   </style>
 </head>
 <body>
-
-  <!-- Search Form -->
   <div class="card">
     <h2>Migration Finder</h2>
-
     <label for="bac">BAC Code</label>
     <input id="bac" type="number" placeholder="Enter BAC" />
-
     <label for="dealerName">Account Name</label>
     <input id="dealerName" type="text" placeholder="Enter name" />
-
     <label for="zip">ZIP Code</label>
     <input id="zip" type="number" placeholder="Enter ZIP" />
-
     <button id="searchBtn">SEARCH</button>
   </div>
 
-  <!-- Results Card -->
   <div class="results-card" id="resultsCard">
     <h2>Results</h2>
     <table id="resultsTable"></table>
   </div>
 
   <script>
-    // require the report logic (Node integration must be true)
-    const { fetchAndParseReport, searchReport } = require('./report.js');
+    // renderer script: invoke OAuth & parsing in main, filter here
+    const { ipcRenderer } = require('electron');
+    const { searchReport } = require('./report.js');
 
     const searchBtn    = document.getElementById('searchBtn');
     const resultsCard  = document.getElementById('resultsCard');
@@ -176,8 +109,8 @@ body::-webkit-scrollbar-thumb:hover {
     searchBtn.addEventListener('click', async () => {
       searchBtn.disabled = true;
       try {
-        // 1. Download & parse
-        const parsed = await fetchAndParseReport();
+        // 1. Download & parse via main process
+        const parsed = await ipcRenderer.invoke('fetch-report');
 
         // 2. Collect criteria
         const criteria = {
@@ -189,15 +122,15 @@ body::-webkit-scrollbar-thumb:hover {
         // 3. Filter
         const results = searchReport(parsed, criteria);
 
-        // 4. Render
+        // 4. Render table
         resultsTable.innerHTML = '';
-        const htr = document.createElement('tr');
+        const headerRow = document.createElement('tr');
         parsed.headers.forEach(h => {
           const th = document.createElement('th');
           th.textContent = h;
-          htr.appendChild(th);
+          headerRow.appendChild(th);
         });
-        resultsTable.appendChild(htr);
+        resultsTable.appendChild(headerRow);
 
         results.forEach(row => {
           const tr = document.createElement('tr');

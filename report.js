@@ -1,24 +1,30 @@
 // report.js
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { app } from 'electron';
-import { google } from 'googleapis';
-import { authenticate } from '@google-cloud/local-auth';
-import ExcelJS from 'exceljs';
+const fs = require('fs/promises');
+const path = require('path');
+const { google } = require('googleapis');
+const { authenticate } = require('@google-cloud/local-auth');
+const ExcelJS = require('exceljs');
 
-const SCOPES           = ['https://www.googleapis.com/auth/gmail.readonly'];
+// Determine a writeable user data path
+let userDataPath;
+try {
+  // If running in main process
+  userDataPath = require('electron').app.getPath('userData');
+} catch {
+  // Fallback in renderer or missing remote: use CWD
+  userDataPath = process.cwd();
+}
+
+const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 const CREDENTIALS_PATH = path.join(process.cwd(), 'Credentials', 'gmailCredentials.json');
-const DOWNLOAD_PATH    = path.join(process.cwd(), 'latestReport.xlsx');
-
-// Store token.json under the user’s data directory
-const userDataPath = app.getPath('userData');
-const TOKEN_PATH   = path.join(userDataPath, 'token.json');
+const DOWNLOAD_PATH = path.join(process.cwd(), 'latestReport.xlsx');
+const TOKEN_PATH = path.join(userDataPath, 'token.json');
 
 /** Load saved credentials from TOKEN_PATH, if present */
 async function loadSavedCredentials() {
   try {
     const content = await fs.readFile(TOKEN_PATH, 'utf8');
-    const creds   = JSON.parse(content);
+    const creds = JSON.parse(content);
     if (!creds.refresh_token) return null;
     return google.auth.fromJSON(creds);
   } catch {
@@ -28,14 +34,13 @@ async function loadSavedCredentials() {
 
 /** Save the refresh token back to TOKEN_PATH */
 async function saveCredentials(client) {
-  const keys    = JSON.parse(await fs.readFile(CREDENTIALS_PATH, 'utf8')).installed;
+  const keys = JSON.parse(await fs.readFile(CREDENTIALS_PATH, 'utf8')).installed;
   const payload = {
-    type:          'authorized_user',
-    client_id:     keys.client_id,
+    type: 'authorized_user',
+    client_id: keys.client_id,
     client_secret: keys.client_secret,
     refresh_token: client.credentials.refresh_token,
   };
-  // Ensure the userData directory exists
   await fs.mkdir(userDataPath, { recursive: true });
   await fs.writeFile(TOKEN_PATH, JSON.stringify(payload, null, 2));
 }
@@ -46,7 +51,7 @@ async function authorize() {
   if (!client) {
     client = await authenticate({
       keyfilePath: CREDENTIALS_PATH,
-      scopes:      SCOPES,
+      scopes: SCOPES,
     });
     if (client.credentials) {
       await saveCredentials(client);
@@ -57,22 +62,20 @@ async function authorize() {
 
 /** Download the latest XLSX attachment to DOWNLOAD_PATH */
 async function downloadLatestReport() {
-  const auth  = await authorize();
+  const auth = await authorize();
   const gmail = google.gmail({ version: 'v1', auth });
 
   const listRes = await gmail.users.messages.list({
-    userId:     'me',
+    userId: 'me',
     q: `subject:"Migration Status Report" -subject:"weekly DWC migration status Report" has:attachment filename:xlsx`,
     maxResults: 1,
   });
-  if (!listRes.data.messages?.length) {
-    throw new Error('No Migration Status Report found.');
-  }
+  if (!listRes.data.messages?.length) throw new Error('No Migration Status Report found.');
   const msgId = listRes.data.messages[0].id;
 
   const full = await gmail.users.messages.get({
     userId: 'me',
-    id:     msgId,
+    id: msgId,
     format: 'full',
   });
 
@@ -81,9 +84,9 @@ async function downloadLatestReport() {
   if (!xlsxPart) throw new Error('No XLSX attachment found on that message.');
 
   const att = await gmail.users.messages.attachments.get({
-    userId:    'me',
+    userId: 'me',
     messageId: msgId,
-    id:        xlsxPart.body.attachmentId,
+    id: xlsxPart.body.attachmentId,
   });
 
   const buffer = Buffer.from(att.data.data, 'base64');
@@ -93,11 +96,10 @@ async function downloadLatestReport() {
 
 /** Parse the XLSX and return { headers:[], data: [...] } */
 async function parseReport(filePath) {
-  const wb    = new ExcelJS.Workbook();
+  const wb = new ExcelJS.Workbook();
   await wb.xlsx.readFile(filePath);
   const sheet = wb.worksheets[0];
 
-  // Detect the header row
   let headerRow;
   for (const row of sheet._rows) {
     if (row && row.values.some(v => typeof v === 'string')) {
@@ -107,7 +109,6 @@ async function parseReport(filePath) {
   }
   if (!headerRow) throw new Error('No header row found.');
 
-  // Map header names to column indices
   const colMap = {};
   headerRow.values.forEach((val, idx) => {
     if (typeof val === 'string') {
@@ -115,7 +116,6 @@ async function parseReport(filePath) {
     }
   });
 
-  // Build array of row objects
   const data = [];
   sheet.eachRow((row, rowNum) => {
     if (rowNum === headerRow.number) return;
@@ -130,15 +130,15 @@ async function parseReport(filePath) {
 }
 
 /**
- * Fetch, download, parse — retrying once on 401 by re‑authenticating
+ * Fetch, download, parse — retrying once on 401 by re-authenticating
  */
-export async function fetchAndParseReport() {
+async function fetchAndParseReport() {
   try {
     const xlsx = await downloadLatestReport();
     return await parseReport(xlsx);
   } catch (err) {
     if ((err.response?.status === 401) || /Login Required/i.test(err.message)) {
-      console.log('🔐  401 received—re‑authenticating...');
+      console.log('🔐  401 received—re-authenticating...');
       await fs.unlink(TOKEN_PATH).catch(() => {});
       const xlsx2 = await downloadLatestReport();
       return await parseReport(xlsx2);
@@ -148,7 +148,7 @@ export async function fetchAndParseReport() {
 }
 
 /** Filter parsed report by BAC / DEALER NAME / ZIP */
-export function searchReport(parsed, { bac, dealerName, zip }) {
+function searchReport(parsed, { bac, dealerName, zip }) {
   return parsed.data.filter(row => {
     if (bac && row['BAC'] !== bac) return false;
     if (dealerName && !row['DEALER NAME'].toLowerCase().includes(dealerName.toLowerCase())) return false;
@@ -156,3 +156,5 @@ export function searchReport(parsed, { bac, dealerName, zip }) {
     return true;
   });
 }
+
+module.exports = { fetchAndParseReport, searchReport };
