@@ -32,4 +32,4 @@ jobs:
             dist/*.dmg
             dist/*.exe
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
