@@ -13,22 +13,26 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with: { node-version: "20" }
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
 
-      - run: npm install
+      - name: Install dependencies
+        run: npm install
 
-      - run: npm run dist
+      - name: Build app for Mac and Windows (no auto-publish)
+        run: npm run dist -- --publish never
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }} # e.g. "v1.0.3"
+          tag_name: ${{ github.ref_name }}
           release_name: Release ${{ github.ref_name }}
-          draft: false # publish immediately
-          prerelease: false
+          draft: false
           files: |
             dist/*.dmg
             dist/*.exe
