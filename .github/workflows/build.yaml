@@ -1,0 +1,37 @@
+name: Build Electron App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build app for Mac and Windows
+        run: npm run dist
+
+      - name: Upload Mac Artifact (.dmg)
+        uses: actions/upload-artifact@v3
+        with:
+          name: MigrationFinder-mac
+          path: dist/*.dmg
+
+      - name: Upload Windows Artifact (.exe)
+        uses: actions/upload-artifact@v3
+        with:
+          name: MigrationFinder-windows
+          path: dist/*.exe
