@@ -55,8 +55,7 @@ Thumbs.db
 *~
 
 # ─── Electron‑specific artifacts ────────────────────
-token.json           # per‑user OAuth tokens
-latestReport.xlsx    # downloaded report
-*.exe                # Windows installers
-*.dmg                # macOS installers
-latestReport.xlsx
+token.json            # per-user OAuth tokens
+/Reports/             # secure downloaded reports
+*.exe                 # Windows installers
+*.dmg                 # macOS installers

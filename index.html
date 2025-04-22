@@ -5,94 +5,199 @@
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;">
   <title>Migration Finder</title>
-
   <style>
-    :root {
-      --bg-body:       #000000;
-      --bg-card:       #1f1f2a;
-      --text-main:     #c0c0c8;
-      --input-bg:      #2a2a3d;
-      --input-border:  #444;
-      --input-text:    #e0e0e8;
-      --button-bg:     #3a86ff;
-      --button-hover:  #559aff;
-      --card-radius:   16px;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 2rem;
-      min-height: 100vh;
-      background: var(--bg-body);
-      font-family: Roboto, sans-serif;
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .card {
-      background: var(--bg-card);
-      border-radius: var(--card-radius);
-      padding: 2rem;
-      width: 360px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.7);
-    }
-    .card h2 { margin: 0 0 1rem; font-size: 1.5rem; text-align: center; }
-    .card label { display: block; margin-top: 1rem; font-size: 0.9rem; }
-    .card input {
-      width: 100%; padding: 0.5rem; margin-top: 0.25rem;
-      background: var(--input-bg); border: 1px solid var(--input-border);
-      border-radius: 4px; color: var(--input-text); font-size: 1rem;
-    }
-    .card button {
-      width: 100%; padding: 0.75rem; margin-top: 1.5rem;
-      background: var(--button-bg); border: none; border-radius: 8px;
-      color: #fff; font-size: 1rem; cursor: pointer;
-      transition: background 0.2s;
-    }
-    .card button:hover { background: var(--button-hover); }
+   :root {
+  --bg-body:       #000000;
+  --bg-card:       #1f1f2a;
+  --text-main:     #c0c0c8;
+  --input-bg:      #2a2a3d;
+  --input-border:  #444;
+  --input-text:    #e0e0e8;
+  --button-bg:     #3a86ff;
+  --button-hover:  #559aff;
+  --card-radius:   16px;
+}
 
-    .results-card {
-      display: none; background: var(--bg-card); border-radius: var(--card-radius);
-      padding: 1rem; margin: 1.5rem auto; box-shadow: 0 8px 24px rgba(0,0,0,0.7);
-      overflow-x: auto; width: 80vw; max-width: 100%;
-    }
-    .results-card h2 { margin: 0 0 1rem; font-size: 1.25rem; text-align: center; }
-    table {
-      border-collapse: collapse; table-layout: auto; width: max-content; white-space: nowrap;
-    }
-    th, td {
-      padding: 0.5rem; border-bottom: 1px solid var(--input-border);
-      font-size: 0.9rem; white-space: nowrap; text-align: left;
-    }
-    th { border-bottom: 2px solid var(--input-border); }
-    /* Scrollbars */
-    .results-card::-webkit-scrollbar { height: 8px; width: 8px; }
-    .results-card::-webkit-scrollbar-track { background: transparent; }
-    .results-card::-webkit-scrollbar-thumb {
-      background-color: #444; border-radius: 4px;
-    }
-    .results-card::-webkit-scrollbar-thumb:hover { background-color: #666; }
-    body::-webkit-scrollbar { width: 8px; }
-    body::-webkit-scrollbar-track { background: transparent; }
-    body::-webkit-scrollbar-thumb { background-color: #444; border-radius: 4px; }
-    body::-webkit-scrollbar-thumb:hover { background-color: #666; }
+* {
+  box-sizing: border-box;
+}
 
-    /* Spinner */
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      border-top-color: #ffffff;
-      border-radius: 50%;
-      animation: spin 1s ease infinite;
-      margin: 0 auto;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+body {
+  margin: 0;
+  padding: 2rem;
+  min-height: 100vh;
+  background: var(--bg-body);
+  font-family: Roboto, sans-serif;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: 2rem;
+  width: 360px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+}
+
+.card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.card label {
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.card input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  color: var(--input-text);
+  font-size: 1rem;
+}
+
+.card button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1.5rem;
+  background: var(--button-bg);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.card button:hover {
+  background: var(--button-hover);
+}
+
+.results-card {
+  display: none;
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: 1rem;
+  margin: 1.5rem auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  overflow-x: auto;
+  width: 80vw;
+  max-width: 100%;
+  min-height: 120px;
+}
+
+.results-card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  table-layout: auto;
+  width: max-content;
+  white-space: nowrap;
+}
+
+th, td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--input-border);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-align: left;
+}
+
+th {
+  border-bottom: 2px solid var(--input-border);
+}
+
+/* Custom Scrollbars */
+.results-card::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.results-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.results-card::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 4px;
+}
+
+.results-card::-webkit-scrollbar-thumb:hover {
+  background-color: #666;
+}
+
+/* Body Scrollbars */
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: #666;
+}
+
+/* Loading Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s ease infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#spinnerText {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  color: #888;
+}
+
+/* No Results Message */
+#noResultsMsg {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+  padding: 1rem;
+  color: #999;
+  display: none;
+}
+
+#noResultsMsg.show {
+  display: block;
+  opacity: 1;
+}
   </style>
 </head>
+
 <body>
   <div class="card">
     <h2>Migration Finder</h2>
@@ -107,75 +212,145 @@
 
   <div id="loading" style="display:none; margin-top: 2rem;">
     <div class="spinner"></div>
+    <div id="spinnerText">Fetching latest report...</div>
   </div>
 
   <div class="results-card" id="resultsCard">
     <h2>Results</h2>
+    <div id="noResultsMsg">🤔 Hmm, No results matched your search.</div>
     <table id="resultsTable"></table>
   </div>
 
+  <div id="errorModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000;">
+    <div style="background:#1f1f2a; padding:2rem; border-radius:8px; width:320px; box-shadow:0 8px 24px rgba(0,0,0,0.7); text-align:center;">
+      <h2 style="color:#ff5555; margin-top:0;">Error</h2>
+      <p id="errorMessage" style="color:#ccc; font-size:0.9rem;"></p>
+      <button id="closeError" style="margin-top:1rem; padding:0.5rem 1rem; background:#3a86ff; border:none; border-radius:6px; color:white; cursor:pointer;">Close</button>
+    </div>
+  </div>
+
+  <div id="versionFooter" style="margin-top:2rem; font-size:0.75rem; color:#555;">
+    Migration Finder v...
+  </div>
+
   <script>
-    const { ipcRenderer } = require('electron');
-    const { searchReport } = require('./report.js');
+    window.onload = () => {
+      console.log('🚀 DOM fully loaded');
 
-    const searchBtn     = document.getElementById('searchBtn');
-    const resultsCard   = document.getElementById('resultsCard');
-    const resultsTable  = document.getElementById('resultsTable');
-    const loadingBanner = document.getElementById('loading');
+      const { ipcRenderer } = require('electron');
+      const { searchReport } = require('./report.js');
 
-    async function performSearch() {
-      searchBtn.disabled = true;
-      loadingBanner.style.display = 'block';
-      resultsCard.style.display = 'none';
-      try {
-        const parsed = await ipcRenderer.invoke('fetch-report');
-        const criteria = {
-          bac:        document.getElementById('bac').value.trim(),
-          dealerName: document.getElementById('dealerName').value.trim(),
-          zip:        document.getElementById('zip').value.trim(),
-        };
-        const results = searchReport(parsed, criteria);
+      const searchBtn = document.getElementById('searchBtn');
+      const resultsCard = document.getElementById('resultsCard');
+      const resultsTable = document.getElementById('resultsTable');
+      const loadingBanner = document.getElementById('loading');
+      const noResultsMsg = document.getElementById('noResultsMsg');
+      const errorModal = document.getElementById('errorModal');
 
+      errorModal.style.display = 'none'; // Always hide modal at startup
+
+      function showError(message, code = '') {
+        console.log('⚠️ showError called with:', { message, code });
+
+        if (!message || typeof message !== 'string' || message.trim() === '') {
+          console.warn('❌ showError skipped (blank or invalid message)');
+          return;
+        }
+
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.innerHTML = `${message}<br><br><small style="color:#888;">Error Code: ${code}</small>`;
+        errorModal.style.display = 'flex';
+      }
+
+      document.getElementById('closeError').addEventListener('click', () => {
+        errorModal.style.display = 'none';
+      });
+
+      async function performSearch() {
+        const bac = document.getElementById('bac').value.trim();
+        const dealerName = document.getElementById('dealerName').value.trim();
+        const zip = document.getElementById('zip').value.trim();
+
+        if (!bac && !dealerName && !zip) {
+          showError('Please enter at least one search field.', 'E003');
+          return;
+        }
+
+        searchBtn.disabled = true;
+        searchBtn.style.opacity = '0.5';
+        loadingBanner.style.display = 'block';
+        resultsCard.style.display = 'none';
+        noResultsMsg.classList.remove('show');
         resultsTable.innerHTML = '';
-        const headerRow = document.createElement('tr');
-        parsed.headers.forEach(h => {
-          const th = document.createElement('th');
-          th.textContent = h;
-          headerRow.appendChild(th);
-        });
-        resultsTable.appendChild(headerRow);
 
-        results.forEach(row => {
-          const tr = document.createElement('tr');
-          parsed.headers.forEach(h => {
-            const td = document.createElement('td');
-            td.textContent = row[h] || '';
-            tr.appendChild(td);
-          });
-          resultsTable.appendChild(tr);
-        });
+        ipcRenderer.invoke('set-searching', true);
 
-        resultsCard.style.display = results.length ? 'block' : 'none';
-        if (!results.length) alert('No matching rows found.');
-      } catch (err) {
-        console.error(err);
-        alert('Search error: ' + err.message);
-      } finally {
-        searchBtn.disabled = false;
-        loadingBanner.style.display = 'none';
+        try {
+          const parsed = await ipcRenderer.invoke('fetch-report');
+          const criteria = { bac, dealerName, zip };
+          const results = searchReport(parsed, criteria);
+
+          if (results.length === 0) {
+            noResultsMsg.classList.add('show');
+          } else {
+            const headerRow = document.createElement('tr');
+            parsed.headers.forEach(h => {
+              const th = document.createElement('th');
+              th.textContent = h;
+              headerRow.appendChild(th);
+            });
+            resultsTable.appendChild(headerRow);
+
+            results.forEach(row => {
+              const tr = document.createElement('tr');
+              parsed.headers.forEach(h => {
+                const td = document.createElement('td');
+                td.textContent = row[h] || '';
+                tr.appendChild(td);
+              });
+              resultsTable.appendChild(tr);
+            });
+          }
+
+          resultsCard.style.display = 'block';
+
+        } catch (err) {
+          console.error('❌ performSearch caught error:', err);
+
+          if (err.message.includes('Login Required') || err.message.includes('401')) {
+            showError('Authorization failed. Please try logging in again.', 'E101');
+          } else if (err.message.includes('No Migration Status Report found')) {
+            showError('Could not find the latest Migration Status Report in your Gmail.', 'E201');
+          } else {
+            showError('An unexpected error occurred. Please try again later.', 'E999');
+          }
+        } finally {
+          searchBtn.disabled = false;
+          searchBtn.style.opacity = '1';
+          loadingBanner.style.display = 'none';
+          ipcRenderer.invoke('set-searching', false);
+        }
       }
-    }
 
-    // When button clicked
-    searchBtn.addEventListener('click', performSearch);
+      searchBtn.addEventListener('click', performSearch);
 
-    // When Enter pressed anywhere
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault(); // prevent form reload
-        performSearch();
-      }
-    });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          performSearch();
+        }
+      });
+
+      ipcRenderer.invoke('get-app-version').then(version => {
+        document.getElementById('versionFooter').textContent = `Migration Finder v${version}`;
+      });
+
+      console.log('🧩 Waiting for close warning...');
+      ipcRenderer.on('show-close-warning', () => {
+        console.log('📩 Received close warning from main process');
+        showError('Search in progress. Please wait for it to complete before exiting.', 'ELOCK');
+      });
+    };
   </script>
 </body>
 </html>

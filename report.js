@@ -1,26 +1,23 @@
-// report.js
 const fs = require('fs/promises');
 const path = require('path');
 const { google } = require('googleapis');
 const { authenticate } = require('@google-cloud/local-auth');
 const ExcelJS = require('exceljs');
 
-// Determine a writeable user data path
+// Determine user data path
 let userDataPath;
 try {
-  // If running in main process
   userDataPath = require('electron').app.getPath('userData');
 } catch {
-  // Fallback in renderer or missing remote: use CWD
   userDataPath = process.cwd();
 }
 
-const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
+const SCOPES           = ['https://www.googleapis.com/auth/gmail.readonly'];
 const CREDENTIALS_PATH = path.join(process.cwd(), 'Credentials', 'gmailCredentials.json');
-const DOWNLOAD_PATH = path.join(process.cwd(), 'latestReport.xlsx');
-const TOKEN_PATH = path.join(userDataPath, 'token.json');
+const TOKEN_PATH       = path.join(userDataPath, 'token.json');
+const reportsFolder    = path.join(userDataPath, 'Reports');
+const DOWNLOAD_PATH    = path.join(reportsFolder, 'latestReport.xlsx');
 
-/** Load saved credentials from TOKEN_PATH, if present */
 async function loadSavedCredentials() {
   try {
     const content = await fs.readFile(TOKEN_PATH, 'utf8');
@@ -32,7 +29,6 @@ async function loadSavedCredentials() {
   }
 }
 
-/** Save the refresh token back to TOKEN_PATH */
 async function saveCredentials(client) {
   const keys = JSON.parse(await fs.readFile(CREDENTIALS_PATH, 'utf8')).installed;
   const payload = {
@@ -45,7 +41,6 @@ async function saveCredentials(client) {
   await fs.writeFile(TOKEN_PATH, JSON.stringify(payload, null, 2));
 }
 
-/** Perform OAuth, launching browser if no valid token */
 async function authorize() {
   let client = await loadSavedCredentials();
   if (!client) {
@@ -60,7 +55,6 @@ async function authorize() {
   return client;
 }
 
-/** Download the latest XLSX attachment to DOWNLOAD_PATH */
 async function downloadLatestReport() {
   const auth = await authorize();
   const gmail = google.gmail({ version: 'v1', auth });
@@ -90,11 +84,11 @@ async function downloadLatestReport() {
   });
 
   const buffer = Buffer.from(att.data.data, 'base64');
+  await fs.mkdir(reportsFolder, { recursive: true });
   await fs.writeFile(DOWNLOAD_PATH, buffer);
   return DOWNLOAD_PATH;
 }
 
-/** Parse the XLSX and return { headers:[], data: [...] } */
 async function parseReport(filePath) {
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.readFile(filePath);
@@ -129,25 +123,32 @@ async function parseReport(filePath) {
   return { headers: Object.keys(colMap), data };
 }
 
-/**
- * Fetch, download, parse — retrying once on 401 by re-authenticating
- */
+// 💡 Main entry point: check timestamp, download only if stale
 async function fetchAndParseReport() {
   try {
-    const xlsx = await downloadLatestReport();
-    return await parseReport(xlsx);
+    let fileFresh = false;
+    try {
+      const stats = await fs.stat(DOWNLOAD_PATH);
+      const fileAge = Date.now() - stats.mtimeMs;
+      if (fileAge < 60 * 60 * 1000) fileFresh = true; // < 1 hour
+    } catch {
+      // File missing — will trigger download
+    }
+
+    const reportPath = fileFresh ? DOWNLOAD_PATH : await downloadLatestReport();
+    return await parseReport(reportPath);
+
   } catch (err) {
     if ((err.response?.status === 401) || /Login Required/i.test(err.message)) {
-      console.log('🔐  401 received—re-authenticating...');
+      console.log('🔐 401 received — reauthenticating...');
       await fs.unlink(TOKEN_PATH).catch(() => {});
-      const xlsx2 = await downloadLatestReport();
-      return await parseReport(xlsx2);
+      const newPath = await downloadLatestReport();
+      return await parseReport(newPath);
     }
     throw err;
   }
 }
 
-/** Filter parsed report by BAC / DEALER NAME / ZIP */
 function searchReport(parsed, { bac, dealerName, zip }) {
   return parsed.data.filter(row => {
     if (bac && row['BAC'] !== bac) return false;
@@ -157,4 +158,8 @@ function searchReport(parsed, { bac, dealerName, zip }) {
   });
 }
 
-module.exports = { fetchAndParseReport, searchReport };
+module.exports = {
+  fetchAndParseReport,
+  searchReport,
+  DOWNLOAD_PATH // export this so main.js can delete on exit
+};
