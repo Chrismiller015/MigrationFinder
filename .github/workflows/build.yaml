@@ -1,4 +1,4 @@
-name: Build Electron App
+name: Build and Release Electron App
 
 on:
   push:
@@ -6,14 +6,14 @@ on:
       - main
 
 jobs:
-  build:
+  release:
     runs-on: macos-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -24,14 +24,11 @@ jobs:
       - name: Build app for Mac and Windows
         run: npm run dist
 
-      - name: Upload Mac Artifact (.dmg)
-        uses: actions/upload-artifact@v3
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: MigrationFinder-mac
-          path: dist/*.dmg
-
-      - name: Upload Windows Artifact (.exe)
-        uses: actions/upload-artifact@v3
-        with:
-          name: MigrationFinder-windows
-          path: dist/*.exe
+          files: |
+            dist/*.dmg
+            dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
