@@ -3,12 +3,16 @@ name: Build and Release Electron App
 on:
   push:
     tags:
-      - "v*.*.*" # Trigger the workflow for version tags like v1.0.0, v1.1.0, etc.
-  workflow_dispatch: # Allow manual triggering from GitHub UI
+      - "v*.*.*" # Trigger the workflow for version tags
+  workflow_dispatch: # Allow manual triggering via GitHub UI
 
 jobs:
   release:
     runs-on: macos-latest
+
+    # Make GH_TOKEN available to ALL steps in this job
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -23,6 +27,7 @@ jobs:
         run: npm install
 
       - name: Build app for Mac and Windows
+        # Here electron-builder will see GH_TOKEN and publish artifacts
         run: npm run dist
 
       - name: Create GitHub Release
@@ -31,5 +36,6 @@ jobs:
           files: |
             dist/*.dmg
             dist/*.exe
+        # softprops/action-gh-release also needs the token
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
