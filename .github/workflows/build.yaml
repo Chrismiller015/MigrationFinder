@@ -3,8 +3,8 @@ name: Build and Release Electron App
 on:
   push:
     tags:
-      - "v*.*.*" # For tag push triggers
-  workflow_dispatch: # Allows manual triggering via GitHub UI
+      - "v*.*.*" # Trigger the workflow for version tags like v1.0.0, v1.1.0, etc.
+  workflow_dispatch: # Allow manual triggering from GitHub UI
 
 jobs:
   release:
@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: "20"
 
       - name: Install dependencies
         run: npm install
