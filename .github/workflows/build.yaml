@@ -2,8 +2,9 @@ name: Build and Release Electron App
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*.*.*" # For tag push triggers
+  workflow_dispatch: # Allows manual triggering via GitHub UI
 
 jobs:
   release:
