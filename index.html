@@ -201,12 +201,18 @@ body::-webkit-scrollbar-thumb:hover {
 <body>
   <div class="card">
     <h2>Migration Finder</h2>
-    <label for="bac">BAC Code</label>
-    <input id="bac" type="number" placeholder="Enter BAC" />
+    <label for="address">Address (Fuzzy Search)</label>
+    <input id="address" type="text" placeholder="e.g., 123 Main St, Anytown, ST" />
+
     <label for="dealerName">Account Name</label>
     <input id="dealerName" type="text" placeholder="Enter name" />
-    <label for="zip">ZIP Code</label>
+    
+    <label for="bac">BAC Code</label>
+    <input id="bac" type="number" placeholder="Enter BAC" />
+    
+    <label for="zip">ZIP Code (Exact Match)</label>
     <input id="zip" type="number" placeholder="Enter ZIP" />
+    
     <button id="searchBtn">SEARCH</button>
   </div>
 
@@ -267,11 +273,14 @@ body::-webkit-scrollbar-thumb:hover {
       });
 
       async function performSearch() {
+        // NEW: Get the address value
+        const address = document.getElementById('address').value.trim();
         const bac = document.getElementById('bac').value.trim();
         const dealerName = document.getElementById('dealerName').value.trim();
         const zip = document.getElementById('zip').value.trim();
 
-        if (!bac && !dealerName && !zip) {
+        // NEW: Update check to include address
+        if (!bac && !dealerName && !zip && !address) {
           showError('Please enter at least one search field.', 'E003');
           return;
         }
@@ -287,7 +296,8 @@ body::-webkit-scrollbar-thumb:hover {
 
         try {
           const parsed = await ipcRenderer.invoke('fetch-report');
-          const criteria = { bac, dealerName, zip };
+          // NEW: Pass address to the criteria
+          const criteria = { bac, dealerName, zip, address };
           const results = searchReport(parsed, criteria);
 
           if (results.length === 0) {

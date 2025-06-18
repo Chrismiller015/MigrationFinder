@@ -3,6 +3,7 @@ const path = require('path');
 const { google } = require('googleapis');
 const { authenticate } = require('@google-cloud/local-auth');
 const ExcelJS = require('exceljs');
+const Fuse = require('fuse.js'); // Using Fuse.js for fuzzy search
 
 // Determine user data path
 let userDataPath;
@@ -123,7 +124,6 @@ async function parseReport(filePath) {
   return { headers: Object.keys(colMap), data };
 }
 
-// 💡 Main entry point: check timestamp, download only if stale
 async function fetchAndParseReport() {
   try {
     let fileFresh = false;
@@ -149,11 +149,35 @@ async function fetchAndParseReport() {
   }
 }
 
-function searchReport(parsed, { bac, dealerName, zip }) {
-  return parsed.data.filter(row => {
+// Updated searchReport function
+function searchReport(parsed, { bac, dealerName, zip, address }) {
+  let searchData = parsed.data;
+
+  // Step 1: If an address is provided, perform a fuzzy search first.
+  if (address) {
+    const fuseOptions = {
+      includeScore: true,
+      threshold: 0.4,
+      keys: [
+        { name: 'ADDRESS', weight: 0.6 },
+        { name: 'CITY', weight: 0.2 },
+        { name: 'ZIP', weight: 0.2 }
+      ]
+    };
+
+    const fuse = new Fuse(parsed.data, fuseOptions);
+    searchData = fuse.search(address).map(result => result.item);
+  }
+
+  // Step 2: Filter the results by the other criteria.
+  return searchData.filter(row => {
     if (bac && row['BAC'] !== bac) return false;
     if (dealerName && !row['DEALER NAME'].toLowerCase().includes(dealerName.toLowerCase())) return false;
-    if (zip && row['ZIP'] !== zip) return false;
+    
+    // **FIXED**: Check if the ZIP from the report starts with the entered ZIP.
+    // This handles cases where the report has "12345-6789" and you search for "12345".
+    if (zip && !(row['ZIP'] && row['ZIP'].startsWith(zip))) return false;
+    
     return true;
   });
 }
@@ -161,5 +185,5 @@ function searchReport(parsed, { bac, dealerName, zip }) {
 module.exports = {
   fetchAndParseReport,
   searchReport,
-  DOWNLOAD_PATH // export this so main.js can delete on exit
+  DOWNLOAD_PATH 
 };
